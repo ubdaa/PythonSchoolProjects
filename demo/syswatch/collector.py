@@ -2,6 +2,7 @@ import platform
 import psutil
 import sys
 import datetime
+import time
 
 def collect_info_system():
     return {
@@ -45,3 +46,12 @@ def collect_all_info():
         "disk": collect_info_disk(),
         "timestamp": datetime.datetime.now().isoformat()
     }
+    
+def collect_info_continuous(interval, number = 0):
+    count = 0
+    while True:
+        yield collect_all_info()
+        count += 1
+        if number != 0 and count >= number:
+            break
+        time.sleep(interval)
