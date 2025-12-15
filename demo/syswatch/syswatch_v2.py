@@ -1,4 +1,4 @@
-import syswatch.collector as collector
+from collector import collect_all_info, collect_info_continuous
 
 def bytes_to_gigabytes(octets):
     return f"{octets / (1024 ** 3):.2f} GB"
@@ -33,7 +33,7 @@ def show_disk(data_disk):
         
 def main():
     print("=== SysWatch v2.0 ===")
-    data = collector.collect_all_info()
+    data = collect_all_info()
     show_system_info(data["system"])
     show_cpu(data["cpu"])
     show_memory(data["memory"])
