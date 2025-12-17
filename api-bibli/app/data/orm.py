@@ -3,6 +3,9 @@ from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from data.models import BookCategory, LoanStatus
 
+from typing import Annotated
+from fastapi import Depends
+
 DATABASE_URL = "sqlite+aiosqlite:///./library.db"
 
 engine = create_async_engine(DATABASE_URL, echo=True)
@@ -87,8 +90,10 @@ class LoanHistory(Base):
 def init_db():
     """Creates the database tables."""
     Base.metadata.create_all(bind=engine)
-    
-    
+
+
 async def get_db():
     async with AsyncSessionLocal() as session:
         yield session
+        
+SessionDep = Annotated[AsyncSession, Depends(get_db)]

@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field, field_validator, EmailStr, model_validator
 from enum import Enum
 import datetime
-import re
 
 # Author model
 class Author(BaseModel):
