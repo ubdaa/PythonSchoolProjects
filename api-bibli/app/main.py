@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import books as books_router
+from routers.author_router import router as author_router
 from data.orm import engine, Base
 
 @asynccontextmanager
@@ -11,6 +11,7 @@ async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
+    pass
 
 
 apiVersion = "v1"
@@ -31,5 +32,4 @@ app.add_middleware(
 )
 
 # routes
-app.include_router(books_router.router, prefix=f"/api/{apiVersion}")
-
+app.include_router(author_router, prefix=f"/api/{apiVersion}")

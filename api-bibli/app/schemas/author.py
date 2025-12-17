@@ -3,7 +3,7 @@ from enum import Enum
 import datetime
 
 # Author model
-class Author(BaseModel):
+class AuthorBase(BaseModel):
     first_name: str
     last_name: str
     date_of_birth: datetime.date
@@ -17,3 +17,4 @@ class Author(BaseModel):
         if self.date_of_death and self.date_of_death < self.date_of_birth:
             raise ValueError('Date of death must be after date of birth')
         return self
+    
