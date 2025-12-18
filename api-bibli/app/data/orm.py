@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, ForeignKey, DateTime, Float, Text, Enum as SqEnum
+from sqlalchemy import Column, Integer, String, Date, ForeignKey, DateTime, Float, Text, Enum as SqEnum, Boolean
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from data.models import BookCategory, LoanStatus
@@ -69,6 +69,7 @@ class Loan(Base):
     return_date = Column(DateTime, nullable=True)
     status = Column(SqEnum(LoanStatus), default=LoanStatus.ON_LOAN)
     comments = Column(Text, nullable=True)
+    renewed = Column(Boolean, default=False)
 
     # Relationships
     book = relationship("Book", back_populates="loans")

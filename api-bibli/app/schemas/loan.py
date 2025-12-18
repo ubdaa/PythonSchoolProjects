@@ -1,26 +1,31 @@
-from pydantic import BaseModel, Field, field_validator, EmailStr, model_validator
-from enum import Enum
-import datetime 
+from pydantic import BaseModel, EmailStr, Field
+from datetime import datetime
+from data.models import LoanStatus
 
-# Loan models
-class LoanStatus(str, Enum):
-    ON_LOAN = "On Loan"
-    RETURNED = "Returned"
-    OVERDUE = "Overdue"
-
-class Loan(BaseModel):
-    book_id: int
+class LoanBase(BaseModel):
     borrower_name: str
     borrower_mail: EmailStr
     card_number: str
-    loan_date: datetime.datetime
-    due_date: datetime.datetime
-    return_date: datetime.datetime | None = None
-    status: LoanStatus
     comments: str | None = None
 
-    @model_validator(mode='after')
-    def check_return_date(self):
-        if self.return_date and self.return_date < self.loan_date:
-            raise ValueError('Return date must be after loan date')
-        return self
+class LoanCreate(LoanBase):
+    book_id: int
+
+class LoanReturn(BaseModel):
+    return_date: datetime | None = None
+    comments: str | None = None
+
+class LoanRead(LoanBase):
+    id: int
+    book_id: int
+    loan_date: datetime
+    due_date: datetime
+    return_date: datetime | None = None
+    status: LoanStatus
+    renewed: bool
+    book_title: str | None = None
+    penalty: float = 0.0
+    days_late: int = 0
+
+    class Config:
+        from_attributes = True

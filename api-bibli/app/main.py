@@ -4,6 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from routers.author_router import router as author_router
+from routers.book_router import router as book_router
+from routers.loan_router import router as loan_router
 from data.orm import engine, Base
 
 @asynccontextmanager
@@ -33,3 +35,5 @@ app.add_middleware(
 
 # routes
 app.include_router(author_router, prefix=f"/api/{apiVersion}")
+app.include_router(book_router, prefix=f"/api/{apiVersion}")
+app.include_router(loan_router, prefix=f"/api/{apiVersion}")
