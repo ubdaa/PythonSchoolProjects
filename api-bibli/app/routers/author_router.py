@@ -64,6 +64,11 @@ async def update_author(author_id: int, author: AuthorUpdate, service: AuthorSer
     existing_author = await service.get_by_id(author_id)
     if not existing_author:
         raise HTTPException(status_code=404, detail="Author not found")
+    
+    existing = await service.get_by_fullname(author.first_name, author.last_name)
+    if existing:
+        raise HTTPException(status_code=400, detail="Author with this name already exists")
+    
     for key, value in author.model_dump().items():
         if value is not None:
             setattr(existing_author, key, value)

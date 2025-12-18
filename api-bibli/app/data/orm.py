@@ -8,7 +8,7 @@ from fastapi import Depends
 
 DATABASE_URL = "sqlite+aiosqlite:///./library.db"
 
-engine = create_async_engine(DATABASE_URL, echo=True)
+engine = create_async_engine(DATABASE_URL, echo=False)
 
 AsyncSessionLocal = sessionmaker(
     engine,
