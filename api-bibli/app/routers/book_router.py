@@ -6,7 +6,7 @@ from schemas.book import BookRead, BookBase, BookUpdate
 
 router = APIRouter(prefix="/books", tags=["Books"])
 
-def get__service(session: SessionDep) -> BookService:
+def get_book_service(session: SessionDep) -> BookService:
     return BookService(session)
 
 @router.get("/", response_model=PaginatedResponse[BookRead])
@@ -18,7 +18,7 @@ async def list_books(
     language: str | None = None,
     sort_by: str = Query("title", regex="^(title|year|author_id)$"),
     order: str = Query("asc", regex="^(asc|desc)$"),
-    service: BookService = Depends(get__service)):
+    service: BookService = Depends(get_book_service)):
     items, total = await service.get_all_filtered(
         page=page,
         page_size=page_size,
@@ -38,7 +38,7 @@ async def list_books(
     )
     
 @router.post("/", response_model=BookRead)
-async def create_book(book: BookBase, service: BookService = Depends(get__service)):
+async def create_book(book: BookBase, service: BookService = Depends(get_book_service)):
     try:
         existing = await service.get_by_isbn(book.isbn)
         if existing:
@@ -51,14 +51,14 @@ async def create_book(book: BookBase, service: BookService = Depends(get__servic
         raise HTTPException(status_code=400, detail=f"Error creating book: {str(e)}")
     
 @router.get("/{book_id}", response_model=BookRead)
-async def get_book(book_id: int, service: BookService = Depends(get__service)):
+async def get_book(book_id: int, service: BookService = Depends(get_book_service)):
     book = await service.get_by_id(book_id)
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
     return book
 
-@router.put("/{book_id}", response_model=BookRead)
-async def update_book(book_id: int, book: BookUpdate, service: BookService = Depends(get__service)):
+@router.patch("/{book_id}", response_model=BookRead)
+async def update_book(book_id: int, book: BookUpdate, service: BookService = Depends(get_book_service)):
     existing_book = await service.get_by_id(book_id)
     if not existing_book:
         raise HTTPException(status_code=404, detail="Book not found")
@@ -67,14 +67,22 @@ async def update_book(book_id: int, book: BookUpdate, service: BookService = Dep
     if existing and existing.id != book_id:
         raise HTTPException(status_code=400, detail="Book with this ISBN already exists")
     
+    old_book = existing_book
+    
     for key, value in book.model_dump().items():
         if value is not None:
             setattr(existing_book, key, value)
+            
+    if old_book.isbn != existing_book.isbn:
+        existing = await service.get_by_isbn(existing_book.isbn)
+        if existing:
+            raise HTTPException(status_code=400, detail="Book with this ISBN already exists")
+    
     updated_book = await service.update(existing_book)
     return updated_book
 
 @router.delete("/{book_id}")
-async def delete_book(book_id: int, service: BookService = Depends(get__service)):
+async def delete_book(book_id: int, service: BookService = Depends(get_book_service)):
     existing_book = await service.get_by_id(book_id)
     if not existing_book:
         raise HTTPException(status_code=404, detail="Book not found")
