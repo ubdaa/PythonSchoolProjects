@@ -16,6 +16,16 @@ async def list_authors(
     order: str = Query("asc", regex="^(asc|desc)$"),
     service: AuthorService = Depends(),
 ):
+    """
+    Retrieve a paginated list of authors with optional filtering and sorting.
+
+    - **page**: Page number (default: 1)
+    - **page_size**: Number of items per page (default: 20)
+    - **search**: Search term for author's name
+    - **nationality**: Filter by nationality
+    - **sort_by**: Sort by field (last_name, first_name, or birth_date)
+    - **order**: Sort order (asc or desc)
+    """
     try:
         authors, total = await service.get_all_filtered(
             page=page,
@@ -41,6 +51,11 @@ async def list_authors(
 async def create_author(
     author: AuthorBase, service: AuthorService = Depends()
 ):
+    """
+    Create a new author.
+
+    - **author**: Author data to create
+    """
     try:
         existing = await service.get_by_fullname(author.first_name, author.last_name)
         if existing:
@@ -59,6 +74,11 @@ async def create_author(
 async def get_author(
     author_id: int, service: AuthorService = Depends()
 ):
+    """
+    Retrieve an author by ID.
+
+    - **author_id**: The ID of the author to retrieve
+    """
     author = await service.get_by_id(author_id)
     if not author:
         raise HTTPException(status_code=404, detail="Author not found")
@@ -71,6 +91,12 @@ async def update_author(
     author: AuthorUpdate,
     service: AuthorService = Depends(),
 ):
+    """
+    Update an existing author.
+
+    - **author_id**: The ID of the author to update
+    - **author**: Updated author data
+    """
     existing_author = await service.get_by_id(author_id)
     if not existing_author:
         raise HTTPException(status_code=404, detail="Author not found")
@@ -92,6 +118,11 @@ async def update_author(
 async def delete_author(
     author_id: int, service: AuthorService = Depends()
 ):
+    """
+    Delete an author by ID.
+
+    - **author_id**: The ID of the author to delete
+    """
     existing_author = await service.get_by_id(author_id)
     if not existing_author:
         raise HTTPException(status_code=404, detail="Author not found")

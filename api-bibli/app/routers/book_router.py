@@ -18,6 +18,17 @@ async def list_books(
     order: str = Query("asc", regex="^(asc|desc)$"),
     service: BookService = Depends(),
 ):
+    """
+    Retrieve a paginated list of books with optional filtering and sorting.
+
+    - **page**: Page number (default: 1)
+    - **page_size**: Number of items per page (default: 20)
+    - **search**: Search term for book title or author
+    - **category**: Filter by category
+    - **language**: Filter by language
+    - **sort_by**: Sort by field (title, year, or author_id)
+    - **order**: Sort order (asc or desc)
+    """
     items, total = await service.get_all_filtered(
         page=page,
         page_size=page_size,
@@ -39,6 +50,11 @@ async def list_books(
 
 @router.post("/", response_model=BookRead)
 async def create_book(book: BookBase, service: BookService = Depends()):
+    """
+    Create a new book.
+
+    - **book**: Book data to create
+    """
     try:
         existing = await service.get_by_isbn(book.isbn)
         if existing:
@@ -55,6 +71,11 @@ async def create_book(book: BookBase, service: BookService = Depends()):
 
 @router.get("/{book_id}", response_model=BookRead)
 async def get_book(book_id: int, service: BookService = Depends()):
+    """
+    Retrieve a book by ID.
+
+    - **book_id**: The ID of the book to retrieve
+    """
     book = await service.get_by_id(book_id)
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
@@ -65,6 +86,12 @@ async def get_book(book_id: int, service: BookService = Depends()):
 async def update_book(
     book_id: int, book: BookUpdate, service: BookService = Depends()
 ):
+    """
+    Update an existing book.
+
+    - **book_id**: The ID of the book to update
+    - **book**: Updated book data
+    """
     existing_book = await service.get_by_id(book_id)
     if not existing_book:
         raise HTTPException(status_code=404, detail="Book not found")
@@ -94,6 +121,11 @@ async def update_book(
 
 @router.delete("/{book_id}")
 async def delete_book(book_id: int, service: BookService = Depends()):
+    """
+    Delete a book by ID.
+
+    - **book_id**: The ID of the book to delete
+    """
     existing_book = await service.get_by_id(book_id)
     if not existing_book:
         raise HTTPException(status_code=404, detail="Book not found")

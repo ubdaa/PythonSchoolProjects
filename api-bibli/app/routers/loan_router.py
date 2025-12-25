@@ -11,6 +11,11 @@ router = APIRouter(prefix="/loans", tags=["Loans"])
 async def create_loan(
     loan: LoanCreate, service: LoanService = Depends()
 ):
+    """
+    Create a new loan.
+
+    - **loan**: Loan data to create
+    """
     try:
         return await service.create_loan(loan)
     except HTTPException as he:
@@ -30,6 +35,17 @@ async def list_loans(
     late_only: bool = False,
     service: LoanService = Depends(),
 ):
+    """
+    Retrieve a paginated list of loans with optional filtering.
+
+    - **page**: Page number (default: 1)
+    - **page_size**: Number of items per page (default: 20)
+    - **status**: Filter by loan status
+    - **borrower_mail**: Filter by borrower's email
+    - **book_id**: Filter by book ID
+    - **active_only**: Show only active loans
+    - **late_only**: Show only late loans
+    """
     loans, total = await service.get_all_filtered(
         page=page,
         page_size=page_size,
@@ -52,6 +68,11 @@ async def list_loans(
 
 @router.get("/{loan_id}", response_model=LoanRead)
 async def get_loan(loan_id: int, service: LoanService = Depends()):
+    """
+    Retrieve loan details by ID.
+
+    - **loan_id**: The ID of the loan to retrieve
+    """
     return await service.get_loan_details(loan_id)
 
 
@@ -61,9 +82,20 @@ async def return_loan(
     return_data: LoanReturn,
     service: LoanService = Depends(),
 ):
+    """
+    Return a loan.
+
+    - **loan_id**: The ID of the loan to return
+    - **return_data**: Return data
+    """
     return await service.return_loan(loan_id, return_data)
 
 
 @router.post("/{loan_id}/renew", response_model=LoanRead)
 async def renew_loan(loan_id: int, service: LoanService = Depends()):
+    """
+    Renew a loan.
+
+    - **loan_id**: The ID of the loan to renew
+    """
     return await service.renew_loan(loan_id)
