@@ -15,7 +15,9 @@ def test_get_statistics():
         "total_books": 100,
         "total_authors": 50,
         "active_loans": 10,
-        "total_loans": 200
+        "total_loans": 200,
+        "late_loans": 5,
+        "occupancy_rate": 0.1
     }
     app.dependency_overrides[get_service] = lambda: mock_service
 
@@ -27,15 +29,17 @@ def test_get_book_statistics():
     mock_service = AsyncMock()
     mock_service.get_book_stats.return_value = {
         "book_id": 1,
-        "title": "Test Book",
+        "book_title": "Test Book",
         "total_loans": 5,
-        "current_loans": 1
+        "current_loans": 1,
+        "average_loan_duration": 7.5,
+        "times_late": 2
     }
     app.dependency_overrides[get_service] = lambda: mock_service
 
     response = client.get("/stats/books/1")
     assert response.status_code == 200
-    assert response.json()["title"] == "Test Book"
+    assert response.json()["book_title"] == "Test Book"
 
 def test_export_csv():
     mock_service = AsyncMock()
@@ -44,4 +48,4 @@ def test_export_csv():
 
     response = client.get("/stats/export/csv")
     assert response.status_code == 200
-    assert response.headers["content-type"] == "text/csv"
+    assert response.headers["content-type"] == "text/csv; charset=utf-8"

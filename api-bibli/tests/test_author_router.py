@@ -23,16 +23,16 @@ def test_list_authors():
 def test_create_author():
     mock_service = AsyncMock()
     mock_service.get_by_fullname.return_value = None
-    mock_service.add.return_value = AuthorRead(id=1, first_name="John", last_name="Doe")
+    mock_service.add.return_value = AuthorRead(id=1, first_name="John", last_name="Doe", date_of_birth="1970-01-01", nationality="USA")
     app.dependency_overrides[AuthorService] = lambda: mock_service
 
-    response = client.post("/authors/", json={"first_name": "John", "last_name": "Doe"})
+    response = client.post("/authors/", json={"first_name": "John", "last_name": "Doe", "date_of_birth": "1970-01-01", "nationality": "USA"})
     assert response.status_code == 200
     assert response.json()["first_name"] == "John"
 
 def test_get_author():
     mock_service = AsyncMock()
-    mock_service.get_by_id.return_value = AuthorRead(id=1, first_name="John", last_name="Doe")
+    mock_service.get_by_id.return_value = AuthorRead(id=1, first_name="John", last_name="Doe", date_of_birth="1970-01-01", nationality="USA")
     app.dependency_overrides[AuthorService] = lambda: mock_service
 
     response = client.get("/authors/1")

@@ -12,8 +12,8 @@ async def list_authors(
     page_size: int = 20,
     search: str | None = None,
     nationality: str | None = None,
-    sort_by: str = Query("last_name", regex="^(last_name|first_name|birth_date)$"),
-    order: str = Query("asc", regex="^(asc|desc)$"),
+    sort_by: str = Query("last_name", pattern="^(last_name|first_name|birth_date)$"),
+    order: str = Query("asc", pattern="^(asc|desc)$"),
     service: AuthorService = Depends(),
 ):
     """

@@ -26,10 +26,10 @@ def test_list_books():
 def test_create_book():
     mock_service = AsyncMock()
     mock_service.get_by_isbn.return_value = None
-    mock_service.add.return_value = BookRead(id=1, title="Test Book", isbn="123", author_id=1, year=2023, available_copies=5)
+    mock_service.add.return_value = BookRead(id=1, title="Test Book", isbn="9786413332929", author_id=1, year=2023, total_copies_owned=5, available_copies=5, category="Fiction", language="EN", publisher="Test Publisher", pages=100)
     app.dependency_overrides[BookService] = lambda: mock_service
 
-    response = client.post("/books/", json={"title": "Test Book", "isbn": "123", "author_id": 1, "year": 2023, "available_copies": 5})
+    response = client.post("/books/", json={"title": "Test Book", "isbn": "9786413332929", "author_id": 1, "year": 2023, "total_copies_owned": 5, "available_copies": 5, "category": "Fiction", "language": "EN", "publisher": "Test Publisher", "pages": 100})
     assert response.status_code == 200
     assert response.json()["title"] == "Test Book"
 

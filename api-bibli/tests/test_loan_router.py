@@ -16,13 +16,15 @@ client = TestClient(app)
 def test_create_loan():
     mock_service = AsyncMock()
     mock_loan = LoanRead(
-        id=1, book_id=1, borrower_email="test@example.com", 
-        loan_date=date.today(), return_date=None, status=LoanStatus.ACTIVE
+        id=1, book_id=1, borrower_mail="test@example.com", card_number="123456",
+        borrower_name="Test User", comments=None,
+        loan_date=date.today(), due_date=date.today(), return_date=None, status=LoanStatus.ON_LOAN, renewed=False,
+        book_title="Test Book", penalty=0.0, days_late=0
     )
     mock_service.create_loan.return_value = mock_loan
     app.dependency_overrides[LoanService] = lambda: mock_service
 
-    response = client.post("/loans/", json={"book_id": 1, "borrower_email": "test@example.com"})
+    response = client.post("/loans/", json={"book_id": 1, "borrower_name": "Test User", "borrower_mail": "test@example.com", "card_number": "123456"})
     assert response.status_code == 201
     assert response.json()["id"] == 1
 
@@ -38,12 +40,14 @@ def test_list_loans():
 def test_return_loan():
     mock_service = AsyncMock()
     mock_loan = LoanRead(
-        id=1, book_id=1, borrower_email="test@example.com", 
-        loan_date=date.today(), return_date=date.today(), status=LoanStatus.RETURNED
+        id=1, book_id=1, borrower_mail="test@example.com", card_number="123456",
+        borrower_name="Test User", comments=None,
+        loan_date=date.today(), due_date=date.today(), return_date=date.today(), status=LoanStatus.RETURNED, renewed=False,
+        book_title="Test Book", penalty=0.0, days_late=0
     )
     mock_service.return_loan.return_value = mock_loan
     app.dependency_overrides[LoanService] = lambda: mock_service
 
     response = client.post("/loans/1/return", json={"condition": "Good"})
     assert response.status_code == 200
-    assert response.json()["status"] == "RETURNED"
+    assert response.json()["status"] == "Returned"

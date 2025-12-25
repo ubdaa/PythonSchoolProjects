@@ -14,8 +14,8 @@ async def list_books(
     search: str | None = None,
     category: str | None = None,
     language: str | None = None,
-    sort_by: str = Query("title", regex="^(title|year|author_id)$"),
-    order: str = Query("asc", regex="^(asc|desc)$"),
+    sort_by: str = Query("title", pattern="^(title|year|author_id)$"),
+    order: str = Query("asc", pattern="^(asc|desc)$"),
     service: BookService = Depends(),
 ):
     """

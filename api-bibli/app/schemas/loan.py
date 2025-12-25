@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 from datetime import datetime
 from app.data.models import LoanStatus
 
@@ -30,6 +30,4 @@ class LoanRead(LoanBase):
     book_title: str | None = None
     penalty: float = 0.0
     days_late: int = 0
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
