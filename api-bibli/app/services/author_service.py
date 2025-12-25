@@ -1,4 +1,3 @@
-from fastapi import Query
 from sqlalchemy import func, select
 from services.template_service import TemplateService
 from data.orm import Author, SessionDep

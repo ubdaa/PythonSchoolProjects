@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 from data.orm import SessionDep
 from services.loan_service import LoanService
 from schemas.loan import LoanCreate, LoanRead, LoanReturn

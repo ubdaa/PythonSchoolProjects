@@ -1,5 +1,4 @@
 from typing import TypeVar, Generic, Type, List, Optional, Any
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import delete
 
