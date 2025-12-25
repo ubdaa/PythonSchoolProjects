@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
-from schemas.common import PaginatedResponse
-from services.author_service import AuthorService
-from data.orm import Author as AuthorORM
-from schemas.author import AuthorBase, AuthorRead, AuthorUpdate
+from app.schemas.common import PaginatedResponse
+from app.services.author_service import AuthorService
+from app.data.orm import Author as AuthorORM
+from app.schemas.author import AuthorBase, AuthorRead, AuthorUpdate
 
 router = APIRouter(prefix="/authors", tags=["Authors"])
 

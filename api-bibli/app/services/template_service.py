@@ -2,7 +2,7 @@ from typing import TypeVar, Generic, Type, List, Optional, Any
 from sqlalchemy.future import select
 from sqlalchemy import delete
 
-from data.orm import SessionDep
+from app.data.orm import SessionDep
 
 T = TypeVar("T")
 

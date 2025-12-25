@@ -1,6 +1,6 @@
 from sqlalchemy import func, select
-from services.template_service import TemplateService
-from data.orm import Book, SessionDep
+from app.services.template_service import TemplateService
+from app.data.orm import Book, SessionDep
 
 
 class BookService(TemplateService[Book]):

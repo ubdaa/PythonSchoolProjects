@@ -12,7 +12,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from data.models import BookCategory, LoanStatus
+from app.data.models import BookCategory, LoanStatus
 
 from typing import Annotated
 from fastapi import Depends

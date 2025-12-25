@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
-from schemas.common import PaginatedResponse
-from data.orm import Book as BookORM
-from services.book_service import BookService
-from schemas.book import BookRead, BookBase, BookUpdate
+from app.schemas.common import PaginatedResponse
+from app.data.orm import Book as BookORM
+from app.services.book_service import BookService
+from app.schemas.book import BookRead, BookBase, BookUpdate
 
 router = APIRouter(prefix="/books", tags=["Books"])
 

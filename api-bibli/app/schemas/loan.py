@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
-from data.models import LoanStatus
+from app.data.models import LoanStatus
 
 
 class LoanBase(BaseModel):

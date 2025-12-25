@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 from sqlalchemy import select, func, or_
 from fastapi import HTTPException
-from services.template_service import TemplateService
-from data.orm import Loan, Book, SessionDep
-from data.models import LoanStatus
-from schemas.loan import LoanCreate, LoanReturn
+from app.services.template_service import TemplateService
+from app.data.orm import Loan, Book, SessionDep
+from app.data.models import LoanStatus
+from app.schemas.loan import LoanCreate, LoanReturn
 
 # Configuration constants
 MAX_LOANS_PER_USER = 5

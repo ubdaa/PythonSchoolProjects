@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
-from services.loan_service import LoanService
-from schemas.loan import LoanCreate, LoanRead, LoanReturn
-from schemas.common import PaginatedResponse
-from data.models import LoanStatus
+from app.services.loan_service import LoanService
+from app.schemas.loan import LoanCreate, LoanRead, LoanReturn
+from app.schemas.common import PaginatedResponse
+from app.data.models import LoanStatus
 
 router = APIRouter(prefix="/loans", tags=["Loans"])
 

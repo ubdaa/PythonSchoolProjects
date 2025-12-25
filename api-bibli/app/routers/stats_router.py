@@ -3,12 +3,12 @@ from fastapi.responses import StreamingResponse
 import csv
 import io
 
-from schemas.common import (
+from app.schemas.common import (
     StatsResponse, BookStatsResponse, AuthorStatsResponse, 
-    MonthlyReportResponse, NeverBorrowedBookResponse, UserActivityResponse
+    MonthlyReportResponse, NeverBorrowedBookResponse
 )
-from services.stats_service import StatsService
-from data.orm import SessionDep
+from app.services.stats_service import StatsService
+from app.data.orm import SessionDep
 
 router = APIRouter(prefix="/stats", tags=["Statistics"])
 
@@ -62,15 +62,6 @@ async def get_never_borrowed_books(service: StatsService = Depends(get_service))
     Retrieve a list of never borrowed books.
     """
     return await service.get_never_borrowed_books()
-
-@router.get("/reports/active-users", response_model=list[UserActivityResponse])
-async def get_active_users(limit: int = 10, service: StatsService = Depends(get_service)):
-    """
-    Retrieve a list of active users.
-
-    - **limit**: The maximum number of users to return (default: 10)
-    """
-    return await service.get_active_users(limit)
 
 @router.get("/export/csv")
 async def export_stats_csv(service: StatsService = Depends(get_service)):

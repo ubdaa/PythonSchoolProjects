@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from sqlalchemy import func, select, case, desc, extract
-from data.orm import Book, Loan, Author, User, SessionDep
+from app.data.orm import Book, Loan, Author, SessionDep
 
 class StatsService:
     def __init__(self, session: SessionDep):
@@ -111,7 +111,6 @@ class StatsService:
         new_books = await self.session.scalar(
             select(func.count(Book.id)).where(Book.publication_year == year)
         )
-        new_users = 0 
         
         total_loans = await self.session.scalar(
             select(func.count(Loan.id)).where(Loan.loan_date >= start_date, Loan.loan_date < end_date)
@@ -124,7 +123,6 @@ class StatsService:
         return {
             "month": start_date.strftime("%Y-%m"),
             "new_books": new_books or 0,
-            "new_users": new_users,
             "total_loans": total_loans or 0,
             "returned_loans": returned_loans or 0
         }
@@ -141,37 +139,3 @@ class StatsService:
             {"book_id": b.id, "title": b.title, "added_date": str(b.publication_year)} 
             for b in books
         ]
-
-    async def get_active_users(self, limit: int = 10):
-        """
-        Retrieve a list of the most active users.
-
-        - **limit**: The maximum number of users to return (default: 10)
-        """
-        statement = (
-            select(User, func.count(Loan.id).label("loan_count"))
-            .join(Loan)
-            .group_by(User.id)
-            .order_by(desc("loan_count"))
-            .limit(limit)
-        )
-        result = await self.session.execute(statement)
-        data = []
-        for user, count in result.all():
-            current_loans = await self.session.scalar(
-                select(func.count(Loan.id)).where(Loan.user_id == user.id, Loan.return_date.is_(None))
-            )
-            late_returns = await self.session.scalar(
-                select(func.count(Loan.id)).where(
-                    Loan.user_id == user.id, 
-                    Loan.return_date > Loan.due_date
-                )
-            )
-            data.append({
-                "user_id": user.id,
-                "full_name": f"{user.first_name} {user.last_name}",
-                "total_loans": count,
-                "current_loans": current_loans,
-                "late_returns": late_returns
-            })
-        return data

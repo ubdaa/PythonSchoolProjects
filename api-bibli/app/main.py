@@ -5,11 +5,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from routers.author_router import router as author_router
-from routers.book_router import router as book_router
-from routers.loan_router import router as loan_router
-from data.orm import engine, Base
-from core.error_handlers import (
+from app.routers.author_router import router as author_router
+from app.routers.book_router import router as book_router
+from app.routers.loan_router import router as loan_router
+from app.data.orm import engine, Base
+from app.core.error_handlers import (
     http_exception_handler,
     validation_exception_handler,
     general_exception_handler
