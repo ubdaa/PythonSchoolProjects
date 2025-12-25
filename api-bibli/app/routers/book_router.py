@@ -1,14 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
 from schemas.common import PaginatedResponse
-from data.orm import SessionDep, Book as BookORM
+from data.orm import Book as BookORM
 from services.book_service import BookService
 from schemas.book import BookRead, BookBase, BookUpdate
 
 router = APIRouter(prefix="/books", tags=["Books"])
-
-
-def get_book_service(session: SessionDep) -> BookService:
-    return BookService(session)
 
 
 @router.get("/", response_model=PaginatedResponse[BookRead])
@@ -20,7 +16,7 @@ async def list_books(
     language: str | None = None,
     sort_by: str = Query("title", regex="^(title|year|author_id)$"),
     order: str = Query("asc", regex="^(asc|desc)$"),
-    service: BookService = Depends(get_book_service),
+    service: BookService = Depends(),
 ):
     items, total = await service.get_all_filtered(
         page=page,
@@ -42,7 +38,7 @@ async def list_books(
 
 
 @router.post("/", response_model=BookRead)
-async def create_book(book: BookBase, service: BookService = Depends(get_book_service)):
+async def create_book(book: BookBase, service: BookService = Depends()):
     try:
         existing = await service.get_by_isbn(book.isbn)
         if existing:
@@ -58,7 +54,7 @@ async def create_book(book: BookBase, service: BookService = Depends(get_book_se
 
 
 @router.get("/{book_id}", response_model=BookRead)
-async def get_book(book_id: int, service: BookService = Depends(get_book_service)):
+async def get_book(book_id: int, service: BookService = Depends()):
     book = await service.get_by_id(book_id)
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
@@ -67,7 +63,7 @@ async def get_book(book_id: int, service: BookService = Depends(get_book_service
 
 @router.patch("/{book_id}", response_model=BookRead)
 async def update_book(
-    book_id: int, book: BookUpdate, service: BookService = Depends(get_book_service)
+    book_id: int, book: BookUpdate, service: BookService = Depends()
 ):
     existing_book = await service.get_by_id(book_id)
     if not existing_book:
@@ -97,7 +93,7 @@ async def update_book(
 
 
 @router.delete("/{book_id}")
-async def delete_book(book_id: int, service: BookService = Depends(get_book_service)):
+async def delete_book(book_id: int, service: BookService = Depends()):
     existing_book = await service.get_by_id(book_id)
     if not existing_book:
         raise HTTPException(status_code=404, detail="Book not found")

@@ -1,15 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
 from schemas.common import PaginatedResponse
 from services.author_service import AuthorService
-from data.orm import SessionDep, Author as AuthorORM
+from data.orm import Author as AuthorORM
 from schemas.author import AuthorBase, AuthorRead, AuthorUpdate
 
 router = APIRouter(prefix="/authors", tags=["Authors"])
-
-
-def get_author_service(session: SessionDep) -> AuthorService:
-    return AuthorService(session)
-
 
 @router.get("/", response_model=PaginatedResponse[AuthorRead])
 async def list_authors(
@@ -19,7 +14,7 @@ async def list_authors(
     nationality: str | None = None,
     sort_by: str = Query("last_name", regex="^(last_name|first_name|birth_date)$"),
     order: str = Query("asc", regex="^(asc|desc)$"),
-    service: AuthorService = Depends(get_author_service),
+    service: AuthorService = Depends(),
 ):
     try:
         authors, total = await service.get_all_filtered(
@@ -44,7 +39,7 @@ async def list_authors(
 
 @router.post("/", response_model=AuthorRead)
 async def create_author(
-    author: AuthorBase, service: AuthorService = Depends(get_author_service)
+    author: AuthorBase, service: AuthorService = Depends()
 ):
     try:
         existing = await service.get_by_fullname(author.first_name, author.last_name)
@@ -62,7 +57,7 @@ async def create_author(
 
 @router.get("/{author_id}", response_model=AuthorRead)
 async def get_author(
-    author_id: int, service: AuthorService = Depends(get_author_service)
+    author_id: int, service: AuthorService = Depends()
 ):
     author = await service.get_by_id(author_id)
     if not author:
@@ -74,7 +69,7 @@ async def get_author(
 async def update_author(
     author_id: int,
     author: AuthorUpdate,
-    service: AuthorService = Depends(get_author_service),
+    service: AuthorService = Depends(),
 ):
     existing_author = await service.get_by_id(author_id)
     if not existing_author:
@@ -95,7 +90,7 @@ async def update_author(
 
 @router.delete("/{author_id}")
 async def delete_author(
-    author_id: int, service: AuthorService = Depends(get_author_service)
+    author_id: int, service: AuthorService = Depends()
 ):
     existing_author = await service.get_by_id(author_id)
     if not existing_author:

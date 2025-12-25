@@ -2,7 +2,6 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 from enum import Enum
 import datetime
 
-
 # Book models
 class BookCategory(str, Enum):
     FICTION = "Fiction"
@@ -17,7 +16,7 @@ class BookCategory(str, Enum):
 class BookBase(BaseModel):
     title: str
     isbn: str = Field(
-        ..., pattern=r"^(97(8|9))?\d{9}(\d|X)$", description="ISBN-13 format"
+        ..., pattern=r"^(97(8|9))?\d{9}(\d)$", description="ISBN-13 format"
     )
     year: int = Field(..., ge=1450, le=datetime.datetime.now().year)
     author_id: int
@@ -58,7 +57,7 @@ class BookRead(BookBase):
 class BookUpdate(BaseModel):
     title: str | None = None
     isbn: str | None = Field(
-        None, pattern=r"^(97(8|9))?\d{9}(\d|X)$", description="ISBN-13 format"
+        None, pattern=r"^(97(8|9))?\d{9}(\d)$", description="ISBN-13 format"
     )
     year: int | None = Field(None, ge=1450, le=datetime.datetime.now().year)
     author_id: int | None = None
