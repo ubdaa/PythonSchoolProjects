@@ -32,3 +32,22 @@ class AuthorStatsResponse(BaseModel):
     author_name: str
     total_books: int
     total_loans: int
+
+class MonthlyReportResponse(BaseModel):
+    month: str
+    new_books: int
+    new_users: int
+    total_loans: int
+    returned_loans: int
+
+class UserActivityResponse(BaseModel):
+    user_id: int
+    full_name: str
+    total_loans: int
+    current_loans: int
+    late_returns: int
+
+class NeverBorrowedBookResponse(BaseModel):
+    book_id: int
+    title: str
+    added_date: str
