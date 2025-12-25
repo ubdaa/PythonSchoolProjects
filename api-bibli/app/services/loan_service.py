@@ -53,6 +53,11 @@ class LoanService(TemplateService[Loan]):
         return loan
 
     async def create_loan(self, loan_data: LoanCreate) -> Loan:
+        """
+        Create a new loan.
+
+        - **loan_data**: The loan data to create
+        """
         # 1. Check book existence
         book_stmt = select(Book).where(Book.id == loan_data.book_id)
         result = await self.session.execute(book_stmt)
@@ -114,6 +119,17 @@ class LoanService(TemplateService[Loan]):
         active_only: bool = False,
         late_only: bool = False,
     ):
+        """
+        Retrieve a paginated list of loans with optional filtering.
+
+        - **page**: Page number
+        - **page_size**: Number of items per page
+        - **status**: Filter by loan status
+        - **borrower_mail**: Filter by borrower's email
+        - **book_id**: Filter by book ID
+        - **active_only**: Show only active loans
+        - **late_only**: Show only late loans
+        """
         statement = select(Loan).join(Book)
 
         if status:
@@ -155,6 +171,11 @@ class LoanService(TemplateService[Loan]):
         return enriched_loans, total
 
     async def get_loan_details(self, loan_id: int) -> Loan:
+        """
+        Retrieve loan details by ID.
+
+        - **loan_id**: The ID of the loan to retrieve
+        """
         stmt = select(Loan).where(Loan.id == loan_id)
         result = await self.session.execute(stmt)
         loan = result.scalar_one_or_none()
@@ -168,6 +189,12 @@ class LoanService(TemplateService[Loan]):
         return loan
 
     async def return_loan(self, loan_id: int, return_data: LoanReturn) -> Loan:
+        """
+        Return a loan.
+
+        - **loan_id**: The ID of the loan to return
+        - **return_data**: Return data
+        """
         loan = await self.get_by_id(loan_id)
         if not loan:
             raise HTTPException(status_code=404, detail="Loan not found")
@@ -202,6 +229,11 @@ class LoanService(TemplateService[Loan]):
         return self._enrich_loan(loan)
 
     async def renew_loan(self, loan_id: int) -> Loan:
+        """
+        Renew a loan.
+
+        - **loan_id**: The ID of the loan to renew
+        """
         loan = await self.get_by_id(loan_id)
         if not loan:
             raise HTTPException(status_code=404, detail="Loan not found")

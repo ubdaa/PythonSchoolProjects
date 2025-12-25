@@ -5,9 +5,15 @@ from data.orm import Author, SessionDep
 
 class AuthorService(TemplateService[Author]):
     def __init__(self, session: SessionDep):
-        super().__init__(session, Author)
+        super().__init__(self, Author)
 
     async def get_by_fullname(self, first_name: str, last_name: str):
+        """
+        Retrieve an author by full name.
+
+        - **first_name**: The first name of the author
+        - **last_name**: The last name of the author
+        """
         statement = select(self.model).where(
             self.model.first_name == first_name, self.model.last_name == last_name
         )
@@ -23,6 +29,16 @@ class AuthorService(TemplateService[Author]):
         sort_by: str = "last_name",
         order: str = "asc",
     ):
+        """
+        Retrieve a paginated list of authors with optional filtering.
+
+        - **page**: Page number
+        - **page_size**: Number of items per page
+        - **search**: Search term for name or biography
+        - **nationality**: Filter by nationality
+        - **sort_by**: Sort field
+        - **order**: Sort order (asc or desc)
+        """
         statement = select(self.model)
         if search:
             statement = statement.where(

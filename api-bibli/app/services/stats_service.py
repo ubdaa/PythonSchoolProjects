@@ -7,11 +7,11 @@ class StatsService:
         self.session = session
 
     async def get_global_stats(self):
+        """
+        Retrieve global statistics for the library.
+        """
         total_books = await self.session.scalar(select(func.count(Book.id)))
-        total_copies = await self.session.scalar(select(func.sum(Book.available_copies))) # Assuming available_copies tracks current stock, total_copies might need a different field if available changes
-        # If total copies is a static field like 'total_copies', use that. If it's dynamic, this logic might need adjustment based on your model.
-        # Assuming 'total_copies' exists on Book or is sum of available + loaned. Let's assume a simple count for now or sum of a field.
-        # If the model only has available_copies, we might need to count loans + available.
+        total_copies = await self.session.scalar(select(func.sum(Book.total_copies_owned))) 
         
         active_loans = await self.session.scalar(select(func.count(Loan.id)).where(Loan.return_date.is_(None)))
         
@@ -23,8 +23,6 @@ class StatsService:
             )
         )
 
-        # Occupancy rate: active loans / total physical copies (active + available)
-        # This depends heavily on your data model. Assuming total_copies = active_loans + sum(Book.available_copies)
         sum_available = await self.session.scalar(select(func.sum(Book.available_copies))) or 0
         total_physical = active_loans + sum_available
         occupancy_rate = (active_loans / total_physical * 100) if total_physical > 0 else 0.0
@@ -39,6 +37,11 @@ class StatsService:
         }
 
     async def get_book_stats(self, book_id: int):
+        """
+        Retrieve statistics for a specific book.
+
+        - **book_id**: The ID of the book
+        """
         book = await self.session.get(Book, book_id)
         if not book:
             return None
@@ -57,10 +60,6 @@ class StatsService:
                 Loan.return_date > Loan.due_date
             )
         )
-
-        # Popularity rank (subquery to rank books by loan count)
-        # This is complex in ORM, simplified approach: count loans for this book vs others
-        # Or just return None if too complex for this scope
         
         return {
             "book_id": book.id,
@@ -68,10 +67,15 @@ class StatsService:
             "total_loans": total_loans,
             "average_loan_duration": float(avg_duration.days) if avg_duration else 0.0,
             "times_late": times_late,
-            "popularity_rank": None # Placeholder
+            "popularity_rank": None
         }
 
     async def get_author_stats(self, author_id: int):
+        """
+        Retrieve statistics for a specific author.
+
+        - **author_id**: The ID of the author
+        """
         author = await self.session.get(Author, author_id)
         if not author:
             return None
@@ -92,6 +96,12 @@ class StatsService:
         }
 
     async def get_monthly_report(self, year: int, month: int):
+        """
+        Retrieve a monthly report for the library.
+
+        - **year**: The year for the report
+        - **month**: The month for the report
+        """
         start_date = datetime(year, month, 1)
         if month == 12:
             end_date = datetime(year + 1, 1, 1)
@@ -99,9 +109,8 @@ class StatsService:
             end_date = datetime(year, month + 1, 1)
 
         new_books = await self.session.scalar(
-            select(func.count(Book.id)).where(Book.publication_year == year) # Simplified, usually needs created_at
+            select(func.count(Book.id)).where(Book.publication_year == year)
         )
-        # Assuming User has created_at, otherwise 0
         new_users = 0 
         
         total_loans = await self.session.scalar(
@@ -121,6 +130,9 @@ class StatsService:
         }
 
     async def get_never_borrowed_books(self):
+        """
+        Retrieve a list of books that have never been borrowed.
+        """
         subquery = select(Loan.book_id).distinct()
         statement = select(Book).where(Book.id.not_in(subquery))
         result = await self.session.execute(statement)
@@ -131,6 +143,11 @@ class StatsService:
         ]
 
     async def get_active_users(self, limit: int = 10):
+        """
+        Retrieve a list of the most active users.
+
+        - **limit**: The maximum number of users to return (default: 10)
+        """
         statement = (
             select(User, func.count(Loan.id).label("loan_count"))
             .join(Loan)

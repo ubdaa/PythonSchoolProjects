@@ -8,6 +8,11 @@ class BookService(TemplateService[Book]):
         super().__init__(session, Book)
 
     async def get_by_isbn(self, isbn: str):
+        """
+        Retrieve a book by its ISBN.
+
+        - **isbn**: The ISBN of the book
+        """
         statement = select(self.model).where(self.model.isbn == isbn)
         result = await self.session.execute(statement)
         return result.first()
@@ -23,6 +28,18 @@ class BookService(TemplateService[Book]):
         sort_by: str = "title",
         order: str = "asc",
     ):
+        """
+        Retrieve a paginated list of books with optional filtering.
+
+        - **page**: Page number
+        - **page_size**: Number of items per page
+        - **search**: Search term for title or description
+        - **isbn**: Filter by ISBN
+        - **category**: Filter by category
+        - **language**: Filter by language
+        - **sort_by**: Sort field
+        - **order**: Sort order (asc or desc)
+        """
         statement = select(self.model)
         if search:
             statement = statement.where(
