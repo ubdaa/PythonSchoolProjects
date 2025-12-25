@@ -7,6 +7,7 @@ from data.orm import SessionDep
 
 T = TypeVar("T")
 
+
 class TemplateService(Generic[T]):
     def __init__(self, session: SessionDep, model: Type[T]):
         self.session = session
@@ -17,7 +18,9 @@ class TemplateService(Generic[T]):
         return result.scalars().all()
 
     async def get_by_id(self, id: Any) -> Optional[T]:
-        result = await self.session.execute(select(self.model).where(self.model.id == id))
+        result = await self.session.execute(
+            select(self.model).where(self.model.id == id)
+        )
         return result.scalar_one_or_none()
 
     async def add(self, entity: T) -> T:

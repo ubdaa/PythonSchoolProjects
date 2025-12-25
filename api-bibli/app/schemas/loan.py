@@ -2,18 +2,22 @@ from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
 from data.models import LoanStatus
 
+
 class LoanBase(BaseModel):
     borrower_name: str
     borrower_mail: EmailStr
     card_number: str
     comments: str | None = None
 
+
 class LoanCreate(LoanBase):
     book_id: int
+
 
 class LoanReturn(BaseModel):
     return_date: datetime | None = None
     comments: str | None = None
+
 
 class LoanRead(LoanBase):
     id: int

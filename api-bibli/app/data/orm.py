@@ -1,4 +1,15 @@
-from sqlalchemy import Column, Integer, String, Date, ForeignKey, DateTime, Float, Text, Enum as SqEnum, Boolean
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Date,
+    ForeignKey,
+    DateTime,
+    Float,
+    Text,
+    Enum as SqEnum,
+    Boolean,
+)
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from data.models import BookCategory, LoanStatus
@@ -10,13 +21,10 @@ DATABASE_URL = "sqlite+aiosqlite:///./library.db"
 
 engine = create_async_engine(DATABASE_URL, echo=False)
 
-AsyncSessionLocal = sessionmaker(
-    engine,
-    class_=AsyncSession,
-    expire_on_commit=False
-)
+AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 Base = declarative_base()
+
 
 class Author(Base):
     __tablename__ = "authors"
@@ -96,5 +104,6 @@ def init_db():
 async def get_db():
     async with AsyncSessionLocal() as session:
         yield session
-        
+
+
 SessionDep = Annotated[AsyncSession, Depends(get_db)]

@@ -8,6 +8,7 @@ from routers.book_router import router as book_router
 from routers.loan_router import router as loan_router
 from data.orm import engine, Base
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
@@ -22,8 +23,8 @@ app = FastAPI(
     title="Library Management API",
     description="REST API for managing a modern library",
     version="1.0.0",
-    lifespan=lifespan
-    )
+    lifespan=lifespan,
+)
 
 app.add_middleware(
     CORSMiddleware,
